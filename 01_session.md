@@ -8,7 +8,7 @@ SampleController
 
 ### 시큐리티 설정
 SecurityConfig
- - 권한분리
+ - filterChain 권한분리
  - InMemoryUserDetailsManager
   - 임의의 id/pw 부여하여 로그인처리
  
@@ -18,3 +18,7 @@ application.yml
  
  SpringSecurityApplication
  - passwordEncoder pw 저장방식을 bean으로 등록
+ 
+ 
+ AccountControllerTest
+ - 유저 접근 test
