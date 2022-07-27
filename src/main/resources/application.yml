@@ -1,0 +1,12 @@
+server:
+  port: 8090
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+spring:
+  security:
+    user:
+      name: admin
+      password: 123
+      roles: ADMIN
