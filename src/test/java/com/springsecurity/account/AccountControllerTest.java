@@ -32,6 +32,7 @@ public class AccountControllerTest {
     @Autowired
     AccountService accountService;
 
+    
     @Test
     //@WithAnonymousUser
     @DisplayName("익명의 사용자 접근")
@@ -40,6 +41,7 @@ public class AccountControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
     }
+    
 
     @Test
     @WithUser
@@ -49,6 +51,7 @@ public class AccountControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
     }
+    
 
     @Test
     @WithUser
@@ -58,6 +61,7 @@ public class AccountControllerTest {
                 .andDo(print())
                 .andExpect(status().isForbidden());
     }
+    
 
     @Test
     @WithMockUser(username = "gos40", roles = "ADMIN")
@@ -67,6 +71,7 @@ public class AccountControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
     }
+    
 
     @Test
     @Transactional
@@ -78,9 +83,14 @@ public class AccountControllerTest {
         mockMvc.perform(formLogin().user(user.getUsername()).password(password))
                 .andExpect(authenticated());
     }
-
+    
+    /**
+     * @Transactional으로 처리하면 데이터가 롤백 되기 떄문에 독립적인 테스트가 가능
+     * 동일한 name으로 생성하여도 롤백되기 떄문에 테스트 가능
+     */
     @Test
     @Transactional
+    @DisplayName("유저생성 및 로그인")
     public void login_success2() throws Exception {
         String username = "gos40";
         String password = "123";
@@ -88,17 +98,19 @@ public class AccountControllerTest {
         mockMvc.perform(formLogin().user(user.getUsername()).password(password))
                 .andExpect(authenticated());
     }
-//
-//    @Test
-//    @Transactional()
-//    public void login_fail() throws Exception {
-//        String username = "gos40";
-//        String password = "123";
-//        Account user = this.createUser(username, password);
-//        mockMvc.perform(formLogin().user(user.getUsername()).password("12345"))
-//                .andExpect(unauthenticated());
-//    }
-//
+    
+
+    @Test
+    @Transactional()
+    @DisplayName("유저생성 및 로그인 실패")
+    public void login_fail() throws Exception {
+        String username = "gos40";
+        String password = "123";
+        Account user = this.createUser(username, password);
+        mockMvc.perform(formLogin().user(user.getUsername()).password("12345"))
+                .andExpect(unauthenticated());
+    }
+
     private Account createUser(String username, String password) {
         Account account = new Account();
         account.setUsername(username);

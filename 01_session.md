@@ -22,3 +22,4 @@ application.yml
  
  AccountControllerTest
  - 유저 접근 test
+ - 로그인 테스트
