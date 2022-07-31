@@ -8,15 +8,18 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.springsecurity.account.AccountContext;
+import com.springsecurity.account.AccountRepository;
+
 import java.security.Principal;
 import java.util.concurrent.Callable;
 
 @Controller
 public class SampleController {
 
-    //@Autowired SampleService sampleService;
+    @Autowired SampleService sampleService;
 
-    //@Autowired AccountRepository accountRepository;
+    @Autowired AccountRepository accountRepository;
 
     //@Autowired BookRepository bookRepository;
 
@@ -39,6 +42,8 @@ public class SampleController {
     @GetMapping("/dashboard")
     public String dashboard(Model model, Principal principal) {
         model.addAttribute("message", "Hello " + principal.getName());
+        AccountContext.setAccount(accountRepository.findByUsername(principal.getName()));
+        sampleService.dashboard();
         return "dashboard";
     }
     
