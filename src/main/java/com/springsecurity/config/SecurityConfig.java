@@ -2,6 +2,8 @@ package com.springsecurity.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -10,7 +12,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableWebSecurity
+@Order(Ordered.LOWEST_PRECEDENCE - 50)
 public class SecurityConfig {
 
 //    @Autowired
@@ -21,8 +23,9 @@ public class SecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
        // http.addFilterBefore(new LoggingFilter(), WebAsyncManagerIntegrationFilter.class);
 
-        http.authorizeRequests()
-                .mvcMatchers("/", "/info", "/account/**", "/signup").permitAll()
+        http.antMatcher("/**")
+        		.authorizeRequests()
+                .mvcMatchers("/", "/info", "/account/**").permitAll()
                 .mvcMatchers("/admin").hasRole("ADMIN")
                 .mvcMatchers("/user").hasRole("USER")
                 .anyRequest().authenticated(); //나머지는 기본 인증

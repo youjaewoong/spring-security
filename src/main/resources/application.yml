@@ -10,3 +10,5 @@ spring:
       name: admin
       password: 123
       roles: ADMIN
+  main:
+    allow-bean-definition-overriding: true
