@@ -15,15 +15,16 @@ SecurityConfig
 application.yml
  - id/pw 를 부여하여 처리할수 있다.
 
- 
- SpringSecurityApplication
+SpringSecurityApplication
  - passwordEncoder pw 저장방식을 bean으로 등록
  
- 
- AccountControllerTest
+AccountControllerTest
  - 유저 접근 test
  - 로그인 테스트
  
- 
- AccountContext
+AccountContext
  - ThreadLocal 정의
+ 
+AuthencationManage가 UserNamePasswordFilter에서 인증하고나서 
+persistenceFilter에서 session에 context를 저장한뒤
+시큐리티 필터를 거치는 모든 요청에 ThreadLocal에 저장이 된다.
