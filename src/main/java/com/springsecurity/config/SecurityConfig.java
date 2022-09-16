@@ -61,21 +61,27 @@ public class SecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
        // http.addFilterBefore(new LoggingFilter(), WebAsyncManagerIntegrationFilter.class);
 
-        http.antMatcher("/**")
-        		.authorizeRequests()
-                .mvcMatchers("/", "/info", "/account/**").permitAll()
+        http.authorizeRequests()
+                .mvcMatchers("/", "/info", "/account/**", "/signup").permitAll()
                 .mvcMatchers("/admin").hasRole("ADMIN")
                 .mvcMatchers("/user").hasRole("USER")
                 .anyRequest().authenticated() //나머지는 기본 인증
         		.expressionHandler(expressionHandler());
 
-        http.formLogin();
+        http.formLogin()
+        	.loginPage("/login")
+        	.permitAll();
+        	//.usernameParameter("my-username")
+        	//.passwordParameter("my-password");
+        
 
 //        http.rememberMe()
 //                .userDetailsService(accountService)
 //                .key("remember-me-sample");
 
         http.httpBasic();
+        http.logout().logoutSuccessUrl("/"); //logout filter에서 핸들림함
+        
         return http.build();
     }
 	
