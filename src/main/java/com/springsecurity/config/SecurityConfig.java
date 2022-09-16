@@ -79,7 +79,7 @@ public class SecurityConfig {
 //                .userDetailsService(accountService)
 //                .key("remember-me-sample");
 
-        http.httpBasic();
+        http.httpBasic();//basciAuthenticationFilter를 지원함 password base64로 인코딩 디코딩하면..인증정보 노출
         http.logout().logoutSuccessUrl("/"); //logout filter에서 핸들림함
         
         return http.build();
