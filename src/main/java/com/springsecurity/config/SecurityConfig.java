@@ -1,7 +1,12 @@
 package com.springsecurity.config;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,17 +14,21 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
 
@@ -81,6 +90,40 @@ public class SecurityConfig {
 
         http.httpBasic();//basciAuthenticationFilter를 지원함 password base64로 인코딩 디코딩하면..인증정보 노출
         http.logout().logoutSuccessUrl("/"); //logout filter에서 핸들림함
+        
+        //세션 관리 필터: SessionManagementFiter
+//        http.sessionManagement()
+//        		.sessionFixation()
+//        			.changeSessionId()
+//        		.invalidSessionUrl("login") // 유효하지않은 경우 url 이동
+//    			.maximumSessions(1)  //세션 한개만 가능
+//    				.maxSessionsPreventsLogin(false); //기존 로그인을 만료하고 다시 세션 처리 true로 할경우 추가 로그인이 안됨
+        
+        //TODO ExceptionTranslatorFilter -> FilterSecurityInterceptor (AccessDecisionManager, AffimitiveBase)
+        //TODO AuthenticationException -> AuthenticationEntryPoint
+        //TODO AccessDeniedException -> AccessDeniedHandler
+        
+        //403 error 발생 시 권한관련
+//        http.exceptionHandling()
+//        	.accessDeniedPage("/access-denied");
+        //403 error 발생 시 권한관련 handler 처리
+        http.exceptionHandling()
+        	.accessDeniedHandler(new AccessDeniedHandler() {
+				@Override
+				public void handle(HttpServletRequest request, HttpServletResponse response,
+						AccessDeniedException accessDeniedException) throws IOException, ServletException {
+					UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+					String username = principal.getUsername();
+					System.out.println(username + " is denied to access " + request.getRequestURI());
+					response.sendRedirect("/access-denied");
+				}
+			});
+        
+        
+        // http.sessionManagement()
+        // 		.sessionCreationPolicy(SessionCreationPolicy.STATELESS); //세션을 사용하지않는 전략
+        
+        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
         
         return http.build();
     }
