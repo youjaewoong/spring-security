@@ -12,7 +12,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class SampleService {
 
-	
+	/**
+	 * 메소드 호출전에 권한검사
+	 * @Secured("ROLE_USER")
+	 * @RolesAllowed("ROLE_USER")
+	 * @PreAuthorize("hasRloe("hasRole(USER)") : 파라미터와 검사가능
+	 * 
+	 * 메소드 호출 후 리턴값을 통한 검사가능
+	 * @PostAuthorize
+	 */
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     public void dashboard() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
