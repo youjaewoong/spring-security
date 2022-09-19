@@ -8,6 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -31,13 +32,17 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
+import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
+
+import com.springsecurity.account.AccountService;
+import com.springsecurity.common.LoggingFilter;
 
 @Configuration
 @Order(Ordered.LOWEST_PRECEDENCE - 50)
 public class SecurityConfig {
 
-//    @Autowired
-//    AccountService accountService;
+	@Autowired
+	AccountService accountService;
 	
 	//롤 지정 방법1 accessDecisionManager
 	/*
@@ -69,7 +74,12 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
        // http.addFilterBefore(new LoggingFilter(), WebAsyncManagerIntegrationFilter.class);
+		
+		//filter 등록
+		http.addFilterBefore(new LoggingFilter(), WebAsyncManagerIntegrationFilter.class);
+		
 
+		//AccessDecisionManager 를 사용하여 인가를 처라한다.
         http.authorizeRequests()
                 .mvcMatchers("/", "/info", "/account/**", "/signup").permitAll()
                 .mvcMatchers("/admin").hasRole("ADMIN")
@@ -83,10 +93,10 @@ public class SecurityConfig {
         	//.usernameParameter("my-username")
         	//.passwordParameter("my-password");
         
-
-//        http.rememberMe()
-//                .userDetailsService(accountService)
-//                .key("remember-me-sample");
+        http.rememberMe()
+        		//.useSecureCookie(true) // https 설정 시 true
+                .userDetailsService(accountService)
+                .key("remember-me-sample");
 
         http.httpBasic();//basciAuthenticationFilter를 지원함 password base64로 인코딩 디코딩하면..인증정보 노출
         http.logout().logoutSuccessUrl("/"); //logout filter에서 핸들림함
