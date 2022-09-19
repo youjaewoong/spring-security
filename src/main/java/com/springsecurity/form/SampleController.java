@@ -12,6 +12,7 @@ import com.springsecurity.account.Account;
 import com.springsecurity.account.AccountContext;
 import com.springsecurity.account.AccountRepository;
 import com.springsecurity.account.UserAccount;
+import com.springsecurity.book.BookRepository;
 import com.springsecurity.common.CurrentUser;
 
 import java.security.Principal;
@@ -26,7 +27,8 @@ public class SampleController {
 	@Autowired
 	AccountRepository accountRepository;
 
-	// @Autowired BookRepository bookRepository;
+	@Autowired 
+	BookRepository bookRepository;
 
 //    @GetMapping("/")
 //    public String index(Model model, Principal principlal) {
@@ -95,6 +97,7 @@ public class SampleController {
 	@GetMapping("/user")
 	public String user(Model model, Principal principal) {
 		model.addAttribute("message", "Hello User, " + principal.getName());
+		model.addAttribute("books", bookRepository.findCurrentUserBooks());
 		return "user";
 	}
 
