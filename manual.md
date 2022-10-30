@@ -19,7 +19,7 @@ SpringSecurityApplication
  - passwordEncoder pw 저장방식을 bean으로 등록
  
 AccountControllerTest
- - 유저 접근 test
+ - 유저 접근 java
  - 로그인 테스트
  
 AccountContext
